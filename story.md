@@ -10,7 +10,7 @@ When any of these situations arise consider how it will be commited:
 
 Most of all, read the code, come up with a plan for not just the impl but the commits to impl it.
 
-## Example happyish path
+## Example
 
 You have an `EventDispatcher` which spawns a worker to process and dispatch events.
 The feature request is to add a configuration value which allows for certain events to be replayed at an interval.
@@ -20,10 +20,39 @@ jj new main -m 'Event replay'
 jj branch create <me>/<issue_number>-event_replay
 ```
 
+```text
+@  zsstsonw esims89@gmail.com 2024-03-10 15:08:46.000 -07:00 me/0-event_replay 7296cf36
+│  (empty) Event replay
+◉  sqntlpvk esims89@gmail.com 2024-03-10 15:05:27.000 -07:00 main 00e234f8
+│  initial commit
+```
+
+### Tip
+
+If you find you have a lot of clutter in your log, consider using the following config:
+
+```toml
+[revset-aliases]
+"wc_trunk()" = "(trunk..@):: | (trunk..@)-"
+trunk = "latest((present(main) | present(master) | present(devel)) & remote_branches())"
+...
+[aliases]
+lt = ["log", "-r", "wc_trunk()"]
+```
+
 - You realize that `EventDispatcher` will need some refactoring.
 - Split `EventDispatcher` components into separate files.
 
-⚫ Revision (`a`): `jj commit -m 'Move EventDispatcher supporting components out to separate files'`
+⚫ Revision (`zsstsonw`): `jj commit -m 'Move EventDispatcher supporting components out to separate files'`
+
+```text
+@  mmlqunzx esims89@gmail.com 2024-03-10 15:19:25.000 -07:00 1e9c0c5e
+│  (empty) (no description set)
+◉  zsstsonw esims89@gmail.com 2024-03-10 15:19:25.000 -07:00 me/0-event_replay c9aa16a3
+│  Move EventDispatcher supporting components out to separate files
+◉  sqntlpvk esims89@gmail.com 2024-03-10 15:05:27.000 -07:00 main 00e234f8
+│  initial commit
+```
 
 This updates the commit message and creates a new change in the working copy.
 
@@ -38,7 +67,6 @@ This updates the commit message and creates a new change in the working copy.
 - Tests fail.
 - Realize that there are two sink's which events must be sent to.
 - Realize the bug would have been prevented by having a single method which dispatches events.
-- Realize the refactor will require ownership transfer of the processed-event-queue from the dispatcher to worker loop-state.
 
 ⚫ Revision (`c`): `jj commit -m 'Event replay unit tests'`
 

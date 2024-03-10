@@ -4,13 +4,12 @@ use tokio::sync::mpsc;
 use tokio::sync::mpsc::error::SendError;
 use tokio::task::JoinHandle;
 
-pub struct Config {
-    pub round_floats: bool,
-}
-pub enum Event {
-    String(String),
-    Float(f64),
-}
+mod config;
+pub use config::Config;
+
+mod event;
+pub use event::Event;
+
 pub struct EventDispatcher {
     out_rx: broadcast::Receiver<String>,
     in_tx: mpsc::Sender<Event>,
