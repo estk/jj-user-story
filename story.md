@@ -45,7 +45,8 @@ lt = ["log", "-r", "wc_trunk()"]
 
 ⚫ Revision (`zsstsonw`): `jj commit -m 'Move EventDispatcher supporting components out to separate files'`
 
-```text
+```sh
+jj log
 @  mmlqunzx esims89@gmail.com 2024-03-10 15:19:25.000 -07:00 1e9c0c5e
 │  (empty) (no description set)
 ◉  zsstsonw esims89@gmail.com 2024-03-10 15:19:25.000 -07:00 me/0-event_replay c9aa16a3
@@ -63,6 +64,18 @@ This updates the commit message and creates a new change in the working copy.
 
 ⚫ Revision (`b`): `jj commit -m 'Add event replay logic and configuration'`
 
+```sh
+jj log
+@  yxvzuomu esims89@gmail.com 2024-03-10 15:34:43.000 -07:00 c8361530
+│  (empty) (no description set)
+◉  swloqlsw esims89@gmail.com 2024-03-10 15:34:43.000 -07:00 6d3da21d
+│  Add event replay logic and configuration
+◉  zsstsonw esims89@gmail.com 2024-03-10 15:21:34.000 -07:00 me/0-event_replay 113c1c2d
+│  Move EventDispatcher supporting components out to separate files
+◉  sqntlpvk esims89@gmail.com 2024-03-10 15:05:27.000 -07:00 main 00e234f8
+│  initial commit
+```
+
 - Write the unit-test to verify event is replayed.
 - Tests fail.
 - Realize that there are two sink's which events must be sent to.
@@ -74,6 +87,22 @@ This updates the commit message and creates a new change in the working copy.
 - Realize you need to add a commit between `a` and `b`
 
 ⚫ Revision (`aa`): `jj new -A a -m "Move EventDispatcher output queue ownership to worker State to enable single dispatch point"`
+
+```sh
+jj log
+◉  okuzlqvo esims89@gmail.com 2024-03-10 15:52:39.000 -07:00 5ff75a63
+│  (no description set)
+◉  yxvzuomu esims89@gmail.com 2024-03-10 15:52:39.000 -07:00 e718e888
+│  Event replay unit tests
+◉  swloqlsw esims89@gmail.com 2024-03-10 15:52:39.000 -07:00 b8940058
+│  Add event replay logic and configuration
+@  roztqptz esims89@gmail.com 2024-03-10 15:52:39.000 -07:00 6076e63b
+│  (empty) Move EventDispatcher output queue ownership to worker State to enable single dispatch point
+◉  zsstsonw esims89@gmail.com 2024-03-10 15:52:39.000 -07:00 me/0-event_replay f7fe1340
+│  Move EventDispatcher supporting components out to separate files
+◉  sqntlpvk esims89@gmail.com 2024-03-10 15:05:27.000 -07:00 main 00e234f8
+│  initial commit
+```
 
 - Perform the refactor
 - View the log of descendent commits `jj log -r '@::'`
