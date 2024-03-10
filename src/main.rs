@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::events::Event;
 
 mod events;
@@ -5,10 +7,14 @@ mod events;
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> anyhow::Result<()> {
     println!("Hello, world!");
-    let config = events::Config { round_floats: true };
+    let config = events::Config {
+        round_floats: true,
+        replay_interval: Duration::from_millis(100),
+    };
     let disp = events::EventDispatcher::new(config);
     disp.event(Event::String("first".into())).await?;
     disp.event(Event::Float(10_f64)).await?;
     let _s = disp.subscribe();
+    tokio::time::sleep(Duration::from_secs(1)).await;
     Ok(())
 }

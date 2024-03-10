@@ -1,5 +1,4 @@
 use anyhow::anyhow;
-use std::time::Duration;
 use tokio::select;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc;
@@ -8,7 +7,6 @@ use tokio::task::JoinHandle;
 
 mod config;
 mod event;
-mod test;
 
 pub use config::Config;
 pub use event::Event;
@@ -16,7 +14,7 @@ pub use event::Event;
 pub struct EventDispatcher {
     out_rx: broadcast::Receiver<String>,
     in_tx: mpsc::Sender<Event>,
-    _worker: JoinHandle<()>,
+    _worker: JoinHandle<anyhow::Result<()>>,
 }
 
 const IN_BUF_SIZE: usize = 10;
@@ -36,7 +34,7 @@ impl EventDispatcher {
         let (in_tx, in_rx) = mpsc::channel(IN_BUF_SIZE);
         let (out_tx, out_rx) = broadcast::channel(OUT_BUF_SIZE);
 
-        let worker = Self::spawn(c.replay_interval, c.round_floats, in_rx, out_tx);
+        let worker = Self::spawn(c.round_floats, in_rx, out_tx);
         Self {
             out_rx,
             in_tx,
@@ -44,15 +42,11 @@ impl EventDispatcher {
         }
     }
     fn spawn(
-        replay_interval: Duration,
         round_floats: bool,
         mut in_rx: mpsc::Receiver<Event>,
-        out_tx: broadcast::Sender<String>,
+        mut out_tx: broadcast::Sender<String>,
     ) -> JoinHandle<anyhow::Result<()>> {
         tokio::spawn(async move {
-            let mut last_float_event = None;
-            let mut interval = tokio::time::interval(replay_interval);
-
             loop {
                 select! {
                     Some(e) = in_rx.recv() => {
@@ -60,17 +54,14 @@ impl EventDispatcher {
                             Event::String(s) => s,
                             Event::Float(f) => {
                                 let f = if round_floats {f.round()} else {f};
-
-                                let m = format!("Float: {}", f);
-                                last_float_event.replace(m.clone());
-                                m
+                                format!("Float: {}", f)
                             },
                         };
                         dispatch(&msg, &mut out_tx)?;
                     },
                     _ = interval.tick() => {
                         if let Some(msg) = &last_float_event {
-                            dispatch(&msg, &mut out_tx)?;
+                            dispatch(msg, &mut out_tx)?;
                         }
                     }
                 }
