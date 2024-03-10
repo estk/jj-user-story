@@ -47,6 +47,7 @@ impl EventDispatcher {
         mut out_tx: broadcast::Sender<String>,
     ) -> JoinHandle<anyhow::Result<()>> {
         tokio::spawn(async move {
+            let mut last_float_event = None;
             loop {
                 select! {
                     Some(e) = in_rx.recv() => {
